@@ -97,7 +97,7 @@ work_dir="tmp/mkdeb_work_dir_$(date +'%Y%m%d%H%M%S')"
 fpm_src_dir="${work_dir}/fpm_src"
 log_dir="${work_dir}/logs"
 
-log "Using work dir ${workdir}"
+log "Using work dir ${work_dir}"
 mkdir -p ${fpm_src_dir}
 mkdir -p ${log_dir}
 
