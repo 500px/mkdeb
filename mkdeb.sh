@@ -35,6 +35,8 @@ function validate_config () {
 }
 
 function validate_files () {
+  log "Validating files in $(pwd)"
+
   local asset_dir=${1:-}
   local upstart_file=${2:-}
   local default_file=${3:-}
