@@ -35,8 +35,6 @@ function validate_config () {
 }
 
 function validate_files () {
-  log "Validating files in $(pwd)"
-
   local asset_dir=${1:-}
   local upstart_file=${2:-}
   local default_file=${3:-}
@@ -84,8 +82,11 @@ if [[ ! -d ${asset_dir} ]]; then
   die "Asset directory ${asset_dir} not found. Use an absolute path, or see README for details on how to create this directory."
 fi
 
+log "INFO: mkdeb started"
+
 cd ${asset_dir}
 if [[ -r mkdeb_configure ]]; then
+    log "INFO: validating files in $(pwd)"
     . mkdeb_configure
     validate_config
     validate_files ${asset_dir} ${deb_upstart_filepath:-} ${deb_default_filepath:-}
@@ -99,7 +100,7 @@ work_dir="tmp/mkdeb_work_dir_$(date +'%Y%m%d%H%M%S')"
 fpm_src_dir="${work_dir}/fpm_src"
 log_dir="${work_dir}/logs"
 
-log "Using work dir ${work_dir}"
+log "INFO: using work dir ${work_dir}"
 mkdir -p ${fpm_src_dir}
 mkdir -p ${log_dir}
 
@@ -137,8 +138,10 @@ for map in "${deb_file_maps[@]}"; do
   fpm_args+=("${map}")
 done
 
-log "Running fpm"
+log "INFO: running fpm"
 ${fpm} "${fpm_args[@]}" 2>&1 | tee -a ${log_dir}/fpm.log
 
-log "Cleaning up working directory ${work_dir}"
+log "INFO: cleaning up working directory ${work_dir}"
 rm -r ${work_dir}
+
+log "INFO: mkdeb finished"
