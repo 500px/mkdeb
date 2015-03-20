@@ -1,0 +1,58 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$bootstrap = <<SCRIPT
+GO_VERSION="1.4.2"
+ROSHI_VERSION="53e6bd85a0fe12befe5d0fd0888070f671cb7ddd"
+
+# Install packages
+sudo apt-get -qq update
+sudo apt-get -qq -y install git curl wget cmake
+sudo /opt/mkdeb/support/install_fpm.sh
+
+mkdir ~/build
+
+# Go setup
+cd ~
+curl -Ss -o godeb-amd64.tar.gz https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz
+tar -xvzf godeb-amd64.tar.gz
+sudo ./godeb install ${GO_VERSION}
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bins
+echo "export GOPATH=$HOME/go" >> ~/.bashrc 
+echo "export PATH=$PATH:$GOPATH/bin" >> ~/.bashrc
+
+# Roshi
+mkdir -p $HOME/go/src/github.com/soundcloud
+cd $HOME/go/src/github.com/soundcloud
+git clone https://github.com/soundcloud/roshi.git
+
+cd roshi
+git checkout ${ROSHI_VERSION}
+cp *.md ~/build
+cd roshi-server && make && cp roshi-server ~/build
+cd ../roshi-walker && make && cp roshi-walker ~/build
+
+# Mkdeb
+cd /opt/mkdeb
+./mkdeb.sh -c asset_files/roshi/assets
+SCRIPT
+
+project_root = Dir.pwd
+project_root.slice! "/asset_files/roshi"
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.5.0"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+  end
+
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = "mkdeb-roshi"
+  config.vm.network :private_network, type: "dhcp"
+
+  config.vm.synced_folder project_root, '/opt/mkdeb', mount_options: ['rw']
+  config.vm.provision "shell", privileged: false, inline: $bootstrap
+end

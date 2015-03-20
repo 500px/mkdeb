@@ -1,0 +1,16 @@
+#!upstart
+description "roshi-server"
+author      "platform@500px.com"
+
+start on started network-services
+stop on stopping network-services
+
+respawn
+respawn limit 10 5
+console log
+
+script
+  [ -r /etc/default/roshi-server ] && . /etc/default/roshi-server
+  [ -r /etc/roshi/server.cfg ] && . /etc/roshi/server.cfg
+  exec start-stop-daemon --start --user roshi --chuid roshi --chdir /opt/roshi --exec /opt/roshi/roshi-server -- $DAEMON_ARGS
+end script

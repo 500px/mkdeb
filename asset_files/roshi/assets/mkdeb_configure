@@ -1,0 +1,32 @@
+# Asset file for mkdeb
+
+conf_upstream="0.0.1"
+conf_commit="53e6bd8"
+conf_revision="$(lsb_release -cs)1"
+
+deb_name="500px-roshi"
+deb_maintainer="platform@500px.com"
+deb_vendor="500px"
+deb_license="MIT"
+deb_url="https://github.com/soundcloud/roshi"
+deb_desc="Roshi ${conf_commit}. Built on: $(date)."
+deb_version="${conf_upstream}+${conf_commit}-${conf_revision}"
+dep_epoch="1"
+deb_upstart_filepath="upstart/roshi-server"
+deb_default_filepath="default/roshi-server"
+
+# copy files
+function copy_to_work_dir () {
+  cp ~/build/* .
+  chmod 0644 *.md
+  return
+}
+
+#maps
+deb_file_maps=(
+  "./roshi-server=/opt/roshi/roshi-server"
+  "./roshi-walker=/opt/roshi/roshi-walker"
+  "./README.md=/opt/roshi/README.md"
+  "./LICENSE.md=/opt/roshi/LICENSE.md"
+  "./CHANGELOG.md=/opt/roshi/CHANGELOG.md"
+)

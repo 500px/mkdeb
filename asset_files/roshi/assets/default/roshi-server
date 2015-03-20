@@ -1,0 +1,25 @@
+# Args for roshi-server
+# List of possible flags - extracted from https://github.com/soundcloud/roshi/blob/master/roshi-server/main.go
+
+# redisInstances             = flag.String("redis.instances", "", "Semicolon-separated list of comma-separated lists of Redis instances")
+# redisConnectTimeout        = flag.Duration("redis.connect.timeout", 3*time.Second, "Redis connect timeout")
+# redisReadTimeout           = flag.Duration("redis.read.timeout", 3*time.Second, "Redis read timeout")
+# redisWriteTimeout          = flag.Duration("redis.write.timeout", 3*time.Second, "Redis write timeout")
+# redisMCPI                  = flag.Int("redis.mcpi", 10, "Max connections per Redis instance")
+# redisHash                  = flag.String("redis.hash", "murmur3", "Redis hash function: murmur3, fnv, fnva")
+# farmWriteQuorum            = flag.String("farm.write.quorum", "51%", "Write quorum, either number of clusters (2) or percentage of clusters (51%)")
+# farmReadStrategy           = flag.String("farm.read.strategy", "SendAllReadAll", "Farm read strategy: SendAllReadAll, SendOneReadOne, SendAllReadFirstLinger, SendVarReadFirstLinger")
+# farmReadThresholdRate      = flag.Int("farm.read.threshold.rate", 2000, "Baseline SendAll keys read per sec, additional keys are SendOne (SendVarReadFirstLinger strategy only)")
+# farmReadThresholdLatency   = flag.Duration("farm.read.threshold.latency", 50*time.Millisecond, "If a SendOne read has not returned anything after this latency, it's promoted to SendAll (SendVarReadFirstLinger strategy only)")
+# farmRepairStrategy         = flag.String("farm.repair.strategy", "RateLimitedRepairs", "Farm repair strategy: AllRepairs, NoRepairs, RateLimitedRepairs")
+# farmRepairMaxKeysPerSecond = flag.Int("farm.repair.max.keys.per.second", 1000, "Max repaired keys per second (RateLimited repairer only)")
+# maxSize                    = flag.Int("max.size", 10000, "Maximum number of events per key")
+# selectGap                  = flag.Duration("select.gap", 0*time.Millisecond, "delay between pipeline read invocations when Selecting over multiple keys")
+# statsdAddress              = flag.String("statsd.address", "", "Statsd address (blank to disable)")
+# statsdSampleRate           = flag.Float64("statsd.sample.rate", 0.1, "Statsd sample rate for normal metrics")
+# statsdBucketPrefix         = flag.String("statsd.bucket.prefix", "myservice.", "Statsd bucket key prefix, including trailing period")
+# prometheusNamespace        = flag.String("prometheus.namespace", "roshiserver", "Prometheus key namespace, excluding trailing punctuation")
+# prometheusMaxSummaryAge    = flag.Duration("prometheus.max.summary.age", 10*time.Second, "Prometheus max age for instantaneous histogram data")
+# httpAddress                = flag.String("http.address", ":6302", "HTTP listen address")
+
+DAEMON_ARGS=""
