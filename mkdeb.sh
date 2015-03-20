@@ -61,7 +61,7 @@ asset_dir=""
 cwd="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Handle args
-while getopts "c:w:" OPTION
+while getopts "c:" OPTION
 do
   case ${OPTION} in
     c) asset_dir=$OPTARG;;
