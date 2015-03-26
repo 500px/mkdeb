@@ -2,7 +2,7 @@
 
 conf_upstream="0.0.1"
 conf_commit="53e6bd8"
-conf_revision="$(lsb_release -cs)1"
+conf_revision="$(lsb_release -cs)2-1"
 
 deb_name="500px-roshi"
 deb_maintainer="platform@500px.com"

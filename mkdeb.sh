@@ -130,9 +130,11 @@ fpm_args+=(--before-remove=${asset_dir}/prerm.sh)
 fpm_args+=(--no-deb-use-file-permissions)
 fpm_args+=(-C ${fpm_src_dir})
 
-for dep in "${deb_deps[@]:-}"; do
-  fpm_args+=(-d "${dep}")
-done
+if [[ -n ${deb_deps:-} ]]; then
+  for dep in "${deb_deps[@]}"; do
+    fpm_args+=(-d "${dep}")
+  done
+fi
 
 for map in "${deb_file_maps[@]}"; do
   fpm_args+=("${map}")
