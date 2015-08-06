@@ -96,6 +96,6 @@ deb_file_maps=(
   "./testsvc_binary=/opt/testsvc/testsvc_binary"
   "./README.md=/opt/testsvc/README.md"
   "./somethingelse.so=/usr/lib/somethingelse.so"
-  # this is the directory we generated, we're going to put it into /opt/testsvc. No trailing slash.
-  "./somedirectory=/opt/testsvc/somedirectory"
+  # this is the directory we generated, we're going to put it into /opt/testsvc/.
+  "./somedirectory=/opt/testsvc/"
 )
