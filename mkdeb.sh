@@ -19,7 +19,6 @@ function usage_and_exit () {
 # mkdeb functions
 function validate_config () {
   # If there is a smarter way to do this with -u I would sure like to know
-
   [[ -n ${deb_name:-} ]] || die "Required var deb_name not defined in mkdeb_configure"
   [[ -n ${deb_maintainer:-} ]] || die "Required var deb_maintainer not defined in mkdeb_configure"
   [[ -n ${deb_vendor:-} ]] || die "Required var deb_vendor not defined in mkdeb_configure"
@@ -28,31 +27,32 @@ function validate_config () {
   [[ -n ${deb_desc:-} ]] || die "Required var deb_desc not defined in mkdeb_configure"
   [[ -n ${deb_version:-} ]] || die "Required var deb_version not defined in mkdeb_configure"
   [[ -n ${dep_epoch:-} ]] || die "Required var dep_epoch not defined in mkdeb_configure"
-  [[ -n ${deb_upstart_filepath:-} ]] || die "Required var deb_upstart_filepath not defined in mkdeb_configure"
-  [[ -n ${deb_default_filepath:-} ]] || die "Required var deb_default_filepath not defined in mkdeb_configure"
-  [[ -n ${deb_file_maps}:- ]] || die "Required var deb_file_maps not defined in mkdeb_configure" 
+  [[ -n ${deb_file_maps:-} ]] || die "Required var deb_file_maps not defined in mkdeb_configure" 
   return
 }
 
 function validate_files () {
-  local asset_dir=${1:-}
-  local upstart_file=${2:-}
-  local default_file=${3:-}
-
+  local asset_dir=${1}
+  local upstart_file=${2}
+  local default_file=${3}
   local expected_files=(
+    ${upstart_file}
+    ${default_file}
     "preinst.sh"
     "prerm.sh"
     "postinst.sh"
     "postrm.sh"
-    "${upstart_file}"
-    "${default_file}"
   )
 
+  # check files exist
   for file in "${expected_files[@]}"; do
+    # skip check if default or upstart wasn't given
+    if [[ ${file} == "_none" ]]; then
+      continue
+    fi
     # check files exist
-    [[ -e ${file} ]] || die "Asset file ${asset_dir}/${file} was not found. See README for details about what files mkdeb expects to find."
+    [[ -e ${file} ]] || die "Expected asset file ${asset_dir}/${file} was not found. See README for details about what files mkdeb expects to find."
   done
-
   return
 }
 
@@ -89,7 +89,10 @@ if [[ -r mkdeb_configure ]]; then
     log "INFO: validating files in $(pwd)"
     . mkdeb_configure
     validate_config
-    validate_files ${asset_dir} ${deb_upstart_filepath:-} ${deb_default_filepath:-}
+
+    # we might get just a default file, or just an upstart file. Set these to _none if not present
+    # so we have some way to validate a positional arg
+    validate_files ${asset_dir} ${deb_upstart_filepath:-"_none"} ${deb_default_filepath:-"_none"}
 else
     die "Cannot find mkdeb_configure in asset_dir"
 fi
@@ -121,8 +124,6 @@ fpm_args+=(--license ${deb_license})
 fpm_args+=(--maintainer ${deb_maintainer})
 fpm_args+=(--url "${deb_url}")
 fpm_args+=(--description "${deb_desc}")
-fpm_args+=(--deb-upstart=${asset_dir}/${deb_upstart_filepath})
-fpm_args+=(--deb-default=${asset_dir}/${deb_default_filepath})
 fpm_args+=(--after-install=${asset_dir}/postinst.sh)
 fpm_args+=(--before-install=${asset_dir}/preinst.sh)
 fpm_args+=(--after-remove=${asset_dir}/postrm.sh)
@@ -130,12 +131,22 @@ fpm_args+=(--before-remove=${asset_dir}/prerm.sh)
 fpm_args+=(--no-deb-use-file-permissions)
 fpm_args+=(-C ${fpm_src_dir})
 
+# conditional fpm args
+if [[ -n ${deb_upstart_filepath:-} ]]; then
+  fpm_args+=(--deb-upstart=${asset_dir}/${deb_upstart_filepath})
+fi
+
+if [[ -n ${deb_default_filepath:-} ]]; then
+  fpm_args+=(--deb-default=${asset_dir}/${deb_default_filepath})
+fi
+
 if [[ -n ${deb_deps:-} ]]; then
   for dep in "${deb_deps[@]}"; do
     fpm_args+=(-d "${dep}")
   done
 fi
 
+# file maps
 for map in "${deb_file_maps[@]}"; do
   fpm_args+=("${map}")
 done

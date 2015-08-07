@@ -39,18 +39,15 @@ dep_epoch="1"
 ##
 ## UPSTART/DEFAULT FILES
 ## Provide a path to upstart and default files, relative to ${asset_dir}. These parameters are 
-## mandatory. mkdeb does not support sysvinit at this time.
+## optional. If you don't have a default or upstart, just leave this commented out. mkdeb does not
+## support sysvinit at this time. 
 ##
-## Since you usually have to 
-## name upstart and default files the same name, it's helpful to put them in subdirectories and 
-## give paths like this:
+## Since you usually have to name upstart and default files the same name, it's helpful to put 
+## them in subdirectories and give paths like this:
 ##
 ## deb_upstart_filepath="upstart/my_daemon" (fpm will rename this to my_daemon.conf)
 ## deb_default_filepath="default/my_daemon"
 ##
-
-deb_upstart_filepath="upstart/testsvc"
-deb_default_filepath="default/testsvc"
 
 ##
 ## MAPPINGS

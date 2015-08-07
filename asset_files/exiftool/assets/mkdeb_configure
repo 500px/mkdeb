@@ -1,0 +1,39 @@
+# Asset file for mkdeb
+conf_upstream="9.90"
+conf_revision="$(lsb_release -cs)1-1"
+
+deb_name="500px-exiftool"
+deb_maintainer="platform@500px.com"
+deb_vendor="500px"
+deb_license="GPL"
+deb_url="http://www.sno.phy.queensu.ca/~phil/exiftool/"
+deb_desc="Library and program to read and write meta information in multimedia files"
+deb_version="${conf_upstream}-${conf_revision}"
+dep_epoch="1"
+
+perl_lib_dir=$(perl -E "say for @INC" | grep /usr/local/share/perl/)
+
+# copy files
+function copy_to_work_dir () {
+  cp /usr/local/bin/exiftool .
+  chown root:root exiftool
+  chmod +x exiftool
+
+  cp -R ${perl_lib_dir}/File .
+  cp -R ${perl_lib_dir}/Image .
+  cp -R /tmp/arg_files .
+
+  chown -R root:root File
+  chown -R root:root Image
+  chown -R root:root arg_files
+
+  return
+}
+
+#maps
+deb_file_maps=(
+  "./exiftool=/usr/local/bin/exiftool"
+  "./File=${perl_lib_dir}"
+  "./Image=${perl_lib_dir}"
+  "./arg_files=/usr/local/share/exiftool/"
+)

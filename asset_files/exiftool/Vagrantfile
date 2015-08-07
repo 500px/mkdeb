@@ -1,0 +1,49 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$bootstrap = <<SCRIPT
+# download exiftool
+EXIFTOOL_VERSION="9.90"
+
+# wget tarball
+cd /usr/src
+wget "http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-${EXIFTOOL_VERSION}.tar.gz" > /dev/null
+
+# decompress tarball
+tar -xvzf "Image-ExifTool-${EXIFTOOL_VERSION}.tar.gz"
+
+# make
+cd "Image-ExifTool-${EXIFTOOL_VERSION}"
+perl Makefile.PL
+make
+make install
+
+# copy arg files to a temp dir so mkdeb can get em
+cp -R arg_files /tmp/arg_files
+
+# install FPM
+/opt/mkdeb/support/install_fpm.sh
+
+# mkdeb
+cd /opt/mkdeb
+./mkdeb.sh -c asset_files/exiftool/assets
+SCRIPT
+
+project_root = Dir.pwd
+project_root.slice! "/asset_files/exiftool"
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.5.0"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+  end
+
+  config.vm.box = "ubuntu/precise64"
+  config.vm.hostname = "mkdeb-exiftool"
+  config.vm.network :private_network, type: "dhcp"
+
+  config.vm.synced_folder project_root, '/opt/mkdeb', mount_options: ['rw']
+  config.vm.provision "shell", privileged: true, inline: $bootstrap
+end
