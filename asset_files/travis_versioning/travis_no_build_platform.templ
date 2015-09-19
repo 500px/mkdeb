@@ -1,0 +1,32 @@
+## Asset file for mkdeb.sh
+## https://github.com/pwyliu/mkdeb
+##
+## This is exactly the same as the other template, but it sets build_platform to "generic"
+
+
+# Travis stuff
+if [[ ${TRAVIS} == 'true' ]]; then
+  # set up some vars
+  timestamp=$(date +"%Y%m%d%H%M")
+  build_platform="generic"
+
+  # commit and branch proccessing
+  conf_commit=$(echo ${TRAVIS_COMMIT:0:8} | awk '{print tolower($0)}')
+  conf_branch=$(echo ${TRAVIS_BRANCH:0:14} | tr _ + | awk '{print tolower($0)}')
+
+  # version string
+  dep_epoch=2
+  if [[ ${conf_branch} == "master" ]]; then
+      # Use tilde as separator here as it sorts before everything else.
+      deb_version="1~${conf_branch}-${timestamp}${build_platform}"
+  else
+      deb_version="0+${conf_branch}-${timestamp}${build_platform}"
+  fi
+
+  # debug
+  log "INFO: mkdeb using branch name ${conf_branch}"
+  log "INFO: mkdeb using commit hash ${conf_commit}"
+  log "INFO: mkdeb setting version string to ${deb_version}"
+else
+    die "This asset file is for travis only"
+fi
