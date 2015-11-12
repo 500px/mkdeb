@@ -25,12 +25,13 @@ this deb. Check out the scipts in `assets` to see how the package works.
 
 ## Generate Debian Package
 ```bash
-vagrant destroy
+# Clean up previous build artifacts if you have any
 rm ../../*.deb
-vagrant up
-# A debian package will be placed in the project root directory.
-```
+vagrant destroy
 
-## Package specifics
-* Install oauth2_proxy into /opt
-* 
+# A deb package will be placed in the project root directory.
+vagrant up
+
+# Get out of here, VM
+vagrant destroy
+```
