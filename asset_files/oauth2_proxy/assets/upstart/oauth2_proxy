@@ -1,0 +1,14 @@
+#!upstart
+description "oauth2_proxy"
+author      "platform@500px.com"
+
+start on started network-services
+stop on stopping network-services
+
+respawn
+respawn limit 10 5
+console log
+
+script
+  exec start-stop-daemon --start --user oauth2_proxy --chuid oauth2_proxy --chdir /opt/oauth2_proxy --exec /opt/oauth2_proxy/oauth2_proxy -- -config=/etc/oauth2_proxy/oauth2_proxy.cfg
+end script
