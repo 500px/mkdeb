@@ -14,7 +14,7 @@ configure)
     fi
 
     chown -R root:root ${app_home}
-    chown -R root:root /etc/${service_name}
+    chown -R ${service_user}:${service_user} /etc/${service_name}
     chown root:root /etc/init/${service_name}.conf
     ;;
 esac
