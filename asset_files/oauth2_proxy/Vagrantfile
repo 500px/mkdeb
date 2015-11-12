@@ -1,0 +1,55 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$bootstrap = <<'SCRIPT'
+#!/bin/bash
+set -euo pipefail
+
+build_dir="/usr/src/oauth2_proxy"
+package_url_base="https://github.com/bitly/oauth2_proxy/releases/download/v2.0.1"
+package_tarball="oauth2_proxy-2.0.1.linux-amd64.go1.4.2.tar.gz"
+
+# Install FPM and other dependencies
+sudo apt-get -qq update
+sudo apt-get -qq -y install curl
+sudo /opt/mkdeb/support/install_fpm.sh
+
+# Prepare build dir
+sudo mkdir -p ${build_dir}
+sudo chown vagrant:vagrant ${build_dir}
+cd ${build_dir}
+
+# Download and unpack oauth2_proxy binary
+wget -q ${package_url_base}/${package_tarball}
+tar -xzf ${package_tarball}
+find . -name "oauth2_proxy" -exec cp {} ${build_dir}/ \;
+
+# Download license file and readme
+wget -q https://raw.githubusercontent.com/bitly/oauth2_proxy/master/LICENSE -O LICENSE 
+wget -q https://raw.githubusercontent.com/bitly/oauth2_proxy/master/README.md -O README.md
+wget -q https://raw.githubusercontent.com/bitly/oauth2_proxy/master/contrib/oauth2_proxy.cfg.example -O oauth2_proxy.cfg
+
+# Run mkdeb
+cd /opt/mkdeb
+./mkdeb.sh -c asset_files/oauth2_proxy/assets
+SCRIPT
+
+project_root = Dir.pwd
+project_root.slice! "/asset_files/oauth2_proxy"
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.5.0"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+  end
+
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = "mkdeb-oauth2-proxy"
+  config.vm.network :private_network, type: "dhcp"
+
+  # mounts the git project_root into VM as /opt/mkdeb
+  config.vm.synced_folder project_root, '/opt/mkdeb', mount_options: ['rw']
+  config.vm.provision "shell", privileged: false, inline: $bootstrap
+end

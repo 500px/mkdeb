@@ -1,0 +1,35 @@
+# Asset file for mkdeb
+oauth2_proxy_version="2.0.1"
+deb_revision="px0.0.1"
+
+deb_name="500px-oauth2-proxy"
+deb_maintainer="platform@500p.com"
+deb_vendor="500px"
+deb_license="MIT"
+deb_url="https://github.com/bitly/oauth2_proxy"
+deb_desc="A reverse proxy that provides authentication with Google, Github or others."
+deb_version="${oauth2_proxy_version}-${deb_revision}"
+dep_epoch="1"
+deb_upstart_filepath="upstart/oauth2_proxy"
+
+# copy files
+function copy_to_work_dir () {
+  cp /usr/src/oauth2_proxy/oauth2_proxy .
+  cp /usr/src/oauth2_proxy/oauth2_proxy.cfg .
+  cp /usr/src/oauth2_proxy/LICENSE .
+  cp /usr/src/oauth2_proxy/README.md .
+
+  chmod 0755 oauth2_proxy
+  chmod 0600 *.cfg
+  chmod 0644 *.md
+
+  return
+}
+
+# file maps
+deb_file_maps=(
+  "./oauth2_proxy=/opt/oauth2_proxy/oauth2_proxy"
+  "./oauth2_proxy.cfg=/etc/oauth2_proxy/oauth2_proxy.cfg"
+  "./README.md=/opt/oauth2_proxy/README.md"
+  "./LICENSE=/opt/oauth2_proxy/LICENSE"
+)
