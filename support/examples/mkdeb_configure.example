@@ -37,16 +37,14 @@ dep_epoch="1"
 ##
 
 ##
-## UPSTART/DEFAULT FILES
-## Provide a path to upstart and default files, relative to ${asset_dir}. These parameters are 
-## optional. If you don't have a default or upstart, just leave this commented out. mkdeb does not
-## support sysvinit at this time. 
-##
-## Since you usually have to name upstart and default files the same name, it's helpful to put 
-## them in subdirectories and give paths like this:
+## INIT/UPSTART/DEFAULT FILES
+## Provide paths to init/upstart/default files, relative to ${asset_dir} (the directory you pass
+## in with -c). These parameters are optional. If you don't have these files, just leave these
+## three options commented out.
 ##
 ## deb_upstart_filepath="upstart/my_daemon" (fpm will rename this to my_daemon.conf)
 ## deb_default_filepath="default/my_daemon"
+## deb_init_filepath="default/my_init_script"
 ##
 
 ##
@@ -54,8 +52,7 @@ dep_epoch="1"
 ## https://github.com/jordansissel/fpm/wiki/Source:-dir
 ##
 ## deb_file_maps should be an array of fpm file mappings, mapping your source file to where you
-## want it to 
-## end up in the deb. See fpm documentation above for details.
+## want it to end up in the deb. See fpm documentation above for details.
 ##
 ##
 ## mkdeb will create a temporary directory you can access with ${fpm_src_dir} and fpm will cd there

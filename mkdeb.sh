@@ -35,9 +35,11 @@ function validate_files () {
   local asset_dir=${1}
   local upstart_file=${2}
   local default_file=${3}
+  local init_file=${4}
   local expected_files=(
     ${upstart_file}
     ${default_file}
+    ${init_file}
     "preinst.sh"
     "prerm.sh"
     "postinst.sh"
@@ -73,8 +75,12 @@ if [[ -z ${asset_dir} ]]; then
   usage_and_exit
 fi
 
-# Bail if not ubuntu, or FPM not installed
-[[ $(lsb_release -is) == "Ubuntu" ]] || die "mkdeb is only supported on Ubuntu 12.04 and higher"
+# Bail if not ubuntu. Skip this check if SKIP_OS_CHECK is not null
+if [[ -z ${SKIP_OS_CHECK:-} ]]; then
+  [[ $(lsb_release -is) == "Ubuntu" ]] || die "mkdeb is only supported on Ubuntu 12.04 and higher"
+fi
+
+# Bail if fpm not found
 fpm=$(command -v fpm) || die "Cannot find fpm in path. You can install fpm with \"gem install fpm\". See README for details."
 
 # Validate asset_dir
@@ -92,7 +98,7 @@ if [[ -r mkdeb_configure ]]; then
 
     # we might get just a default file, or just an upstart file. Set these to _none if not present
     # so we have some way to validate a positional arg
-    validate_files ${asset_dir} ${deb_upstart_filepath:-"_none"} ${deb_default_filepath:-"_none"}
+    validate_files ${asset_dir} ${deb_upstart_filepath:-"_none"} ${deb_default_filepath:-"_none"} ${deb_init_filepath:-"_none"}
 else
     die "Cannot find mkdeb_configure in asset_dir"
 fi
@@ -138,6 +144,10 @@ fi
 
 if [[ -n ${deb_default_filepath:-} ]]; then
   fpm_args+=(--deb-default=${asset_dir}/${deb_default_filepath})
+fi
+
+if [[ -n ${deb_init_filepath:-} ]]; then
+  fpm_args+=(--deb-init=${asset_dir}/${deb_init_filepath})
 fi
 
 if [[ -n ${deb_deps:-} ]]; then
