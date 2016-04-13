@@ -30,8 +30,18 @@ mkdeb only makes [debian packages](https://www.debian.org/doc/debian-policy/ch-b
     * `mydefaultfile`, the package's default file
   * `upstart/` - (optional) a directory containing the upstart
     * `myupstartfile`, the package's upstart file
+  * `init/` - (optional) a directory containing a sysvinit style init script
+    * `myscriptfile`, the package's init script
 
-Simply invoke mkdeb like this: `./mkdeb.sh -c my_stuff`. Or in a `.travis.yml` you might do something like this:
+mkdeb won't try to stop you, but you should consider `upstart` and `init` to be mutually exclusive.
+
+You can invoke mkdeb like this:
+
+```bash
+./mkdeb.sh -c my_stuff
+```
+
+Alternately, in a `.travis.yml` or similar CI system, you might do something like this:
 
 ```
 # travis.yml
