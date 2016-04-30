@@ -39,7 +39,7 @@ cd /opt/mkdeb
 SCRIPT
 
 project_root = Dir.pwd
-project_root.slice! "/asset_files/roshi"
+project_root.slice! "/asset_files/500px-roshi"
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.5.0"
