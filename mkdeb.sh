@@ -104,8 +104,15 @@ else
 fi
 
 # Create workdir, src dir, log dir
+# Set PX_MKDEB_WORKDIR to override working directory location
 cd ${cwd}
-work_dir="tmp/mkdeb_work_dir_$(date +'%Y%m%d%H%M%S')"
+
+if [[ -z ${PX_MKDEB_WORKDIR:-} ]]; then
+  work_dir="/tmp/mkdeb_work_dir_$(date +'%Y%m%d%H%M%S')"
+else
+  work_dir=${PX_MKDEB_WORKDIR}
+fi
+
 fpm_src_dir="${work_dir}/fpm_src"
 log_dir="${work_dir}/logs"
 
