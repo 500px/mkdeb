@@ -108,7 +108,7 @@ fi
 cd ${cwd}
 
 if [[ -z ${PX_MKDEB_WORKDIR:-} ]]; then
-  work_dir="/tmp/mkdeb_work_dir_$(date +'%Y%m%d%H%M%S')"
+  work_dir="tmp/mkdeb_work_dir_$(date +'%Y%m%d%H%M%S')"
 else
   work_dir=${PX_MKDEB_WORKDIR}
 fi
