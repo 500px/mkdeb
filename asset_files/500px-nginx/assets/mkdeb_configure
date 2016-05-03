@@ -55,6 +55,7 @@ function copy_to_work_dir () {
 
   # set permissions
   chmod -R 0644 etc/
+  chmod 0755 etc/nginx/conf.d
   chmod 0755 usr/sbin/nginx
 
   chown -R root:root etc/

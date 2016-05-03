@@ -80,7 +80,7 @@ cd nginx-${NGINX_VERSION}
 make
 
 # mkdeb
-/opt/mkdeb/mkdeb.sh -c /opt/mkdeb/asset_files/500px-nginx/assets
+PX_MKDEB_WORKDIR=/tmp/mkdir /opt/mkdeb/mkdeb.sh -c /opt/mkdeb/asset_files/500px-nginx/assets
 SCRIPT
 
 project_root = Dir.pwd
