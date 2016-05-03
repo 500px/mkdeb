@@ -1,0 +1,104 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$bootstrap = <<'SCRIPT'
+#!/bin/bash
+set -euo pipefail
+
+build_dir="/usr/src/nginx"
+
+# http://nginx.org/en/download.html
+export NGINX_VERSION="1.10.0"
+nginx_tarball="http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"
+
+# https://github.com/openresty/headers-more-nginx-module
+export headers_more_version="0.29"
+headers_more_tarball="https://github.com/openresty/headers-more-nginx-module/archive/v0.29.tar.gz"
+
+# Install FPM and other dependencies
+apt-get -qq update
+apt-get -qq -y install curl
+/opt/mkdeb/support/install_fpm.sh
+
+# Nginx build dependencies
+apt-get -qq -y install libpcre3 libpcre3-dev libssl-dev zlib1g zlib1g-dev
+
+# Prepare build dir
+mkdir -p ${build_dir}
+cd ${build_dir}
+
+# Download and unpack tarballs
+wget -q ${nginx_tarball}
+tar -xzf nginx-${NGINX_VERSION}.tar.gz
+
+wget -q ${headers_more_tarball}
+tar -xzf v${headers_more_version}.tar.gz
+
+# Configure makefile. This is exactly the same as the official repo, with the addition of the 
+# headers more 3rd party module.
+cd nginx-${NGINX_VERSION}
+./configure \
+--prefix=/etc/nginx \
+--sbin-path=/usr/sbin/nginx \
+--conf-path=/etc/nginx/nginx.conf \
+--error-log-path=/var/log/nginx/error.log \
+--http-log-path=/var/log/nginx/access.log \
+--pid-path=/var/run/nginx.pid \
+--lock-path=/var/run/nginx.lock \
+--http-client-body-temp-path=/var/cache/nginx/client_temp \
+--http-proxy-temp-path=/var/cache/nginx/proxy_temp \
+--http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
+--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
+--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
+--user=nginx \
+--group=nginx \
+--with-http_ssl_module \
+--with-http_realip_module \
+--with-http_addition_module \
+--with-http_sub_module \
+--with-http_dav_module \
+--with-http_flv_module \
+--with-http_mp4_module \
+--with-http_gunzip_module \
+--with-http_gzip_static_module \
+--with-http_random_index_module \
+--with-http_secure_link_module \
+--with-http_stub_status_module \
+--with-http_auth_request_module \
+--with-threads \
+--with-stream \
+--with-stream_ssl_module \
+--with-http_slice_module \
+--with-mail \
+--with-mail_ssl_module \
+--with-file-aio \
+--with-http_v2_module \
+--with-ipv6 \
+--add-module="/usr/src/nginx/headers-more-nginx-module-${headers_more_version}"
+
+# MAAAAAAKE
+make
+
+# mkdeb
+/opt/mkdeb/mkdeb.sh -c /opt/mkdeb/asset_files/500px-nginx/assets
+SCRIPT
+
+project_root = Dir.pwd
+project_root.slice! "/asset_files/500px-nginx"
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.5.0"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+  end
+
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = "mkdeb-nginx"
+  config.vm.network :private_network, type: "dhcp"
+
+  # mounts the git project_root into VM as /opt/mkdeb
+  config.vm.synced_folder project_root, '/opt/mkdeb', mount_options: ['rw']
+  config.vm.provision "shell", privileged: true, inline: $bootstrap
+end

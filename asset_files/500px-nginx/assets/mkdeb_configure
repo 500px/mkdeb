@@ -1,0 +1,72 @@
+# Asset file for mkdeb
+
+# nginx version env var was set by vagrant
+deb_default_filepath="default/nginx"
+deb_desc="https://github.com/pwyliu/mkdeb/tree/master/asset_files/500px-nginx"
+deb_init_filepath="init/nginx"
+deb_license="FreeBSD"
+deb_maintainer="platform@500p.com"
+deb_name="500px-nginx"
+deb_revision="$(lsb_release -cs)1"
+deb_url="http://nginx.org/"
+deb_vendor="500px"
+deb_version="${NGINX_VERSION}-${deb_revision}"
+dep_epoch="1"
+deb_deps=(
+  "libc6 (>= 2.14)"
+  "libpcre3"
+  "libssl1.0.0 (>= 1.0.1)"
+  "zlib1g (>= 1:1.1.4)"
+  "lsb-base"
+  "adduser"
+)
+
+# copy files
+function copy_to_work_dir () {
+
+  # /usr/sbin
+  mkdir -p usr/sbin
+  cp /usr/src/nginx/nginx-${NGINX_VERSION}/objs/nginx usr/sbin/
+
+  # /etc/nginx
+  mkdir -p etc/nginx
+  cp /usr/src/nginx/nginx-${NGINX_VERSION}/LICENSE etc/nginx/
+  cp /usr/src/nginx/nginx-${NGINX_VERSION}/conf/koi-win etc/nginx/
+  cp /usr/src/nginx/nginx-${NGINX_VERSION}/conf/koi-utf etc/nginx/
+  cp /usr/src/nginx/nginx-${NGINX_VERSION}/conf/win-utf etc/nginx/
+  cp /usr/src/nginx/nginx-${NGINX_VERSION}/conf/mime.types etc/nginx/
+  cp /usr/src/nginx/nginx-${NGINX_VERSION}/conf/fastcgi_params etc/nginx/
+  cp /usr/src/nginx/nginx-${NGINX_VERSION}/conf/uwsgi_params etc/nginx/
+  cp /usr/src/nginx/nginx-${NGINX_VERSION}/conf/scgi_params etc/nginx/
+  cp /opt/mkdeb/asset_files/500px-nginx/assets/nginx.conf etc/nginx/
+  cp -R /opt/mkdeb/asset_files/500px-nginx/assets/conf.d etc/nginx/
+
+  # note that the source of the symlink is the absolute path to /usr.
+  mkdir -p usr/lib/nginx/modules
+  ln -s /usr/lib/nginx/modules etc/nginx/modules
+
+  # /etc/logrotate.d
+  mkdir -p etc/logrotate.d
+  cp -R /opt/mkdeb/asset_files/500px-nginx/assets/logrotate.d etc
+
+  # /var
+  mkdir -p var/cache/nginx
+  mkdir -p var/log/nginx
+
+  # set permissions
+  chmod -R 0644 etc/
+  chmod 0755 usr/sbin/nginx
+
+  chown -R root:root etc/
+  chown -R root:root usr/
+  chown -R root:root var/
+
+  return
+}
+
+# file maps
+deb_file_maps=(
+  "./etc=/"
+  "./usr=/"
+  "./var=/"
+)
