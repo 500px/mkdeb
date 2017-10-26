@@ -35,16 +35,11 @@ function validate_files () {
   local asset_dir=${1}
   local upstart_file=${2}
   local upstart_files=${3}
-
-  if [[ ! ${upstart_file} == "_none" ]]; then
-    [[ ${upstart_files} == "_none" ]] && upstart_files=()
-    upstart_files+=(${upstart_file})
-  fi
-
   local default_file=${4}
   local init_file=${5}
   local expected_files=(
     ${default_file}
+    ${upstart_file}
     ${init_file}
     "preinst.sh"
     "prerm.sh"
@@ -53,8 +48,9 @@ function validate_files () {
   )
 
   if [[ ! ${upstart_files} == "_none" ]]; then
-    for upstart_file in "${upstart_files[@]}"; do
-      expected_files+=(${upstart_file})
+    for file in "${upstart_files[@]}"; do
+      log "Upstart File: ${file}"
+      expected_files+=(${file})
     done
   fi
 
@@ -165,8 +161,8 @@ if [[ -n ${deb_upstart_filepath:-} ]]; then
   fpm_args+=(--deb-upstart=${asset_dir}/${deb_upstart_filepath})
 fi
 
-if [[ -n ${deb_default_filepaths:-} ]]; then
-  for filepath in "${deb_default_filepaths[@]}"; do
+if [[ -n ${deb_upstart_filepaths:-} ]]; then
+  for filepath in "${deb_upstart_filepaths[@]}"; do
     fpm_args+=(--deb-upstart=${asset_dir}/${filepath})
   done
 fi
