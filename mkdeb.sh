@@ -58,7 +58,9 @@ function validate_files () {
     done
   fi
 
-  log ${expected_files}
+  for expected_file in "${expected_files[@]}"; do
+    log ${expected_file}
+  done
 
   # check files exist
   for file in "${expected_files[@]}"; do
