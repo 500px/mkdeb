@@ -34,9 +34,8 @@ function validate_config () {
 function validate_files () {
   local asset_dir=${1}
   local upstart_file=${2}
-  local upstart_files=${3}
-  local default_file=${4}
-  local init_file=${5}
+  local default_file=${3}
+  local init_file=${4}
   local expected_files=(
     ${default_file}
     ${upstart_file}
@@ -47,8 +46,8 @@ function validate_files () {
     "postrm.sh"
   )
 
-  if [[ ! ${upstart_files} == "_none" ]]; then
-    for file in "${upstart_files[@]}"; do
+  if [[ ! -n ${deb_upstart_filepaths:-} ]]; then
+    for file in "${deb_upstart_filepaths[@]}"; do
       log "Upstart File: ${file}"
       expected_files+=(${file})
     done
@@ -110,7 +109,7 @@ if [[ -r mkdeb_configure ]]; then
 
     # we might get just a default file, or just an upstart file. Set these to _none if not present
     # so we have some way to validate a positional arg
-    validate_files ${asset_dir} ${deb_upstart_filepath:-"_none"} ${deb_upstart_filepaths:-"_none"} ${deb_default_filepath:-"_none"} ${deb_init_filepath:-"_none"}
+    validate_files ${asset_dir} ${deb_upstart_filepath:-"_none"} ${deb_default_filepath:-"_none"} ${deb_init_filepath:-"_none"}
 else
     die "Cannot find mkdeb_configure in asset_dir"
 fi
