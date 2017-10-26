@@ -27,7 +27,7 @@ function validate_config () {
   [[ -n ${deb_desc:-} ]] || die "Required var deb_desc not defined in mkdeb_configure"
   [[ -n ${deb_version:-} ]] || die "Required var deb_version not defined in mkdeb_configure"
   [[ -n ${dep_epoch:-} ]] || die "Required var dep_epoch not defined in mkdeb_configure"
-  [[ -n ${deb_file_maps:-} ]] || die "Required var deb_file_maps not defined in mkdeb_configure" 
+  [[ -n ${deb_file_maps:-} ]] || die "Required var deb_file_maps not defined in mkdeb_configure"
   return
 }
 
@@ -147,6 +147,12 @@ fpm_args+=(-C ${fpm_src_dir})
 # conditional fpm args
 if [[ -n ${deb_upstart_filepath:-} ]]; then
   fpm_args+=(--deb-upstart=${asset_dir}/${deb_upstart_filepath})
+fi
+
+if [[ -n ${deb_default_filepaths:-} ]]; then
+  for filepath in "${deb_default_filepaths[@]}"; do
+    fpm_args+=(--deb-upstart=${asset_dir}/${filepath})
+  done
 fi
 
 if [[ -n ${deb_default_filepath:-} ]]; then

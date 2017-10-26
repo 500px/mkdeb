@@ -1,10 +1,10 @@
 ##
 ## DEB CONFIGURATION
-## Put package metadata here to be fed to fpm (take a look at the script source if you want to add 
+## Put package metadata here to be fed to fpm (take a look at the script source if you want to add
 ## something for your org). All of these parameters are mandatory.
 ##
-## Since this is just a bash file, you can put some logic in here or reference env vars and mkdeb 
-## will execute this too. For example, if you are using travis or jenkins you can reference 
+## Since this is just a bash file, you can put some logic in here or reference env vars and mkdeb
+## will execute this too. For example, if you are using travis or jenkins you can reference
 ## branch and git commit info when constructing the deb_version string:
 ##
 ## deb_version="1.0.0_${TRAVIS_COMMIT}"
@@ -23,7 +23,7 @@ dep_epoch="1"
 ##
 ## DEPENDENCIES
 ## This should be an array of package dependencies. They will be fed into fpm with the -d flag.
-## See fpm help for details. This parameter is optional. If you don't have any dependencies, 
+## See fpm help for details. This parameter is optional. If you don't have any dependencies,
 ## leave this commented out.
 ##
 ## deb_deps=(
@@ -42,7 +42,8 @@ dep_epoch="1"
 ## in with -c). These parameters are optional. If you don't have these files, just leave these
 ## three options commented out.
 ##
-## deb_upstart_filepath="upstart/my_daemon" (fpm will rename this to my_daemon.conf)
+## deb_upstart_filepath="my_daemon.upstart" (fpm will rename this to my_daemon.conf)
+## deb_upstart_filepaths=("my_daemon1.upstart" "my_daemon2.upstart") (fpm will rename this to my_daemon1.conf and my_daemon2.conf)
 ## deb_default_filepath="default/my_daemon"
 ## deb_init_filepath="default/my_init_script"
 ##
@@ -56,8 +57,8 @@ dep_epoch="1"
 ##
 ##
 ## mkdeb will create a temporary directory you can access with ${fpm_src_dir} and fpm will cd there
-## to look for files. You can use the copy_to_work_dir function to move (or generate) src files 
-## in ${fpm_src_dir} so you can reference them with relative paths in maps. Even if you don't use 
+## to look for files. You can use the copy_to_work_dir function to move (or generate) src files
+## in ${fpm_src_dir} so you can reference them with relative paths in maps. Even if you don't use
 ## this function, it must still be defined.
 ##
 
@@ -65,17 +66,17 @@ function copy_to_work_dir () {
   # mkdeb.sh cd's to ${fpm_src_dir} before executing this function
   # log "copying files to ${fpm_src_dir}"
 
-  # Here we generate a directory as an example. Usually you probably just want to copy a dir into 
+  # Here we generate a directory as an example. Usually you probably just want to copy a dir into
   # ${fpm_src_dir} from the thing you are packaging.
   mkdir somedirectory
   cd somedirectory
   touch a bunch of files
 
-  # And here we generate some individual files to map. Again, in real life you probably would just 
-  # want to copy files over. But this is just bash, so you can technically do whatever in this 
-  # function. Wget something, do a git checkout, build something. Whatever floats your boat. Just 
+  # And here we generate some individual files to map. Again, in real life you probably would just
+  # want to copy files over. But this is just bash, so you can technically do whatever in this
+  # function. Wget something, do a git checkout, build something. Whatever floats your boat. Just
   # remember that the parent script is running with set -euo pipefail, so make sure you are handling
-  # that correctly. If this is a hassle, you can disable this by modifying the top of mkdeb.sh 
+  # that correctly. If this is a hassle, you can disable this by modifying the top of mkdeb.sh
   # to comment it out.
   cd ..
   touch testsvc_binary
