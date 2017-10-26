@@ -47,16 +47,10 @@ function validate_files () {
   )
 
   if [ ${#deb_upstart_filepaths} -gt 0 ]; then
-    log "Upstart Files: ${deb_upstart_filepaths[*]}"
     for file in "${deb_upstart_filepaths[@]}"; do
-      log "Upstart File: ${file}"
       expected_files+=(${file})
     done
   fi
-
-  for expected_file in "${expected_files[@]}"; do
-    log ${expected_file}
-  done
 
   # check files exist
   for file in "${expected_files[@]}"; do
