@@ -46,7 +46,8 @@ function validate_files () {
     "postrm.sh"
   )
 
-  if [[ ! -n ${deb_upstart_filepaths:-} ]]; then
+  if [ ${#deb_upstart_filepaths} -gt 0 ]; then
+    log "Upstart Files: ${deb_upstart_filepaths[*]}"
     for file in "${deb_upstart_filepaths[@]}"; do
       log "Upstart File: ${file}"
       expected_files+=(${file})
