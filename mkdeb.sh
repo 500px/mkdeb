@@ -46,10 +46,13 @@ function validate_files () {
     "postrm.sh"
   )
 
-  if [ ${#deb_upstart_filepaths} -gt 0 ]; then
-    for file in "${deb_upstart_filepaths[@]}"; do
-      expected_files+=(${file})
-    done
+  # if deb_upstart_filepaths is set we want to make sure the filepaths specified are tested
+  if [ -n ${deb_upstart_filepaths} ]; then
+    if [ ${#deb_upstart_filepaths[@]} -gt 0 ]; then
+      for file in "${deb_upstart_filepaths[@]}"; do
+        expected_files+=(${file})
+      done
+    fi
   fi
 
   # check files exist
